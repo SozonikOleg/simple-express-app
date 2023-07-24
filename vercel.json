@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "name": "express-products-versel",
+  "name": "express-products-vercel",
   "builds": [
-    {"src":  "src/index.ts", "use":  "@versel/node"}
+    {"src":  "src/index.ts", "use":  "@vercel/node"}
   ],
   "routes": [
     {"src":  "/(.*)", "dest":  "src/index.ts"}
