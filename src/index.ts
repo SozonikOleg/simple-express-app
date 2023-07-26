@@ -84,8 +84,6 @@ app.post('/videos', (req: any, res: Response<VideoType>) => {
            "P144"
        ]}
 
-    console.log("req.body.title.length", req.body.title.length)
-
     if(req.body.title.length < 1){
         res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
         return;
