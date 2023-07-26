@@ -15,7 +15,7 @@ type VideoType = {
     availableResolutions: string[]
 }
 
-const HTTP_STATUSES = {
+export const HTTP_STATUSES = {
     OK_200: 200,
     CREATED_201: 201,
     NO_CONTENT_204: 204,
@@ -24,7 +24,7 @@ const HTTP_STATUSES = {
     NOT_FOUND_404: 404,
 }
 
-const videosDb  = [
+let videosDb  = [
     {
         id: 0,
         title: "string",
@@ -84,6 +84,13 @@ app.post('/videos', (req: any, res: Response<VideoType>) => {
            "P144"
        ]}
 
+    console.log("req.body.title.length", req.body.title.length)
+
+    if(req.body.title.length < 1){
+        res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+        return;
+    }
+
     videosDb.push(newVideo as any)
     res.status(201).send(newVideo)
 })
@@ -123,7 +130,6 @@ app.put('/videos/:id', (req: any, res: any ) => {
 // DELETE
 app.delete('/videos/:id', (req: Request<{id: string},{},{},{}>, res: Response) => {
     let videos = videosDb.find((v: any)  => v.id === +req.params.id);
-
     if(videos){
         for(let i = 0; i < videosDb.length; i++){
             if(videosDb[i].id === +req.params.id){
@@ -135,6 +141,11 @@ app.delete('/videos/:id', (req: Request<{id: string},{},{},{}>, res: Response) =
     } else {
         res.send(404)
     }
+})
+
+app.delete('/__test__/data', (req, res) => {
+    videosDb = [];
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 })
 
 
