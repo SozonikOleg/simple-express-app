@@ -77,12 +77,12 @@ app.post('/videos', (req: Request, res: Response) => {
        id: +(new Date()),
        title: req.body.title,
        author: req.body.author,
-       canBeDownloaded: true,
-       minAgeRestriction: null,
-       createdAt: new Date(),
-       publicationDate: "2023-07-24T11:49:49.897Z",
+       canBeDownloaded: req.body.canBeDownloaded,
+       minAgeRestriction: req.body.minAgeRestriction,
+       createdAt: new Date().toISOString(),
+       publicationDate: new Date().toISOString(),
        availableResolutions: [
-           "P144"
+           ...req.body.availableResolutions
        ]}
 
     const { title, author, availableResolutions } = req.body;
@@ -119,8 +119,9 @@ app.get('/videos/:id', (req: Request<{id: string},{},{},{}>, res: any) => {
 app.put('/videos/:id', (req: Request, res: Response ) => {
     const { title, author, availableResolutions, canBeDownloaded, minAgeRestriction, publicationDate } = req.body;
     const errs = videoValidator.check({ title, author, availableResolutions, canBeDownloaded, minAgeRestriction, publicationDate });
-    if (errs.length > 0) {
-        res.status(HTTP_STATUSES.NOT_FOUND_404).send({
+
+    if (errs.length > 0 || !req.params.id) {
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).send({
             errorsMessages: errs
         });
         return;
@@ -129,7 +130,7 @@ app.put('/videos/:id', (req: Request, res: Response ) => {
     let video= videosDb.find((v: any)  => v.id === +req.params.id);
     if(video){
         video.title = req.body.title
-        res.status(HTTP_STATUSES.OK_200).send(video)
+        res.status(HTTP_STATUSES.NO_CONTENT_204).send(video)
     }
 })
 
@@ -151,7 +152,7 @@ app.delete('/videos/:id', (req: Request<{id: string},{},{},{}>, res: Response) =
     }
 })
 
-app.delete('/__test__/data', (req, res) => {
+app.delete('/testing/all-data', (req, res) => {
     videosDb = [];
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 })

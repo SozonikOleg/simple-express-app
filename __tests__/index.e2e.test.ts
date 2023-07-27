@@ -5,7 +5,7 @@ import {HTTP_STATUSES} from "../src/index";
 describe('/course', () => {
 
     beforeAll( async () => {
-        await request(app).delete('/__test__/data')
+        await request(app).delete('/testing/all-data')
     })
 
     it("Should return 200 and empty array", async() => {
@@ -81,7 +81,7 @@ describe('/course', () => {
         await request(app)
             .put('/videos/' + createdVideo.id)
             .send({title: 'Video2', author: 'author', availableResolutions: [  "P144"] })
-            .expect(HTTP_STATUSES.OK_200)
+            .expect(HTTP_STATUSES.NO_CONTENT_204)
 
         await request(app)
             .get('/videos/' + createdVideo.id)
