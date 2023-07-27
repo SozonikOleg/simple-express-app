@@ -1,4 +1,5 @@
 import express, {Request, Response} from 'express';
+import videoValidator from "../validator/videoValidation";
 import bodyParser from 'body-parser';
 
 export const app = express();
@@ -24,7 +25,7 @@ export const HTTP_STATUSES = {
     NOT_FOUND_404: 404,
 }
 
-let videosDb  = [
+let videosDb = [
     {
         id: 0,
         title: "string",
@@ -71,7 +72,7 @@ app.use(parserMiddleware);
 
 
 // CREATE
-app.post('/videos', (req: any, res: Response<VideoType>) => {
+app.post('/videos', (req: Request, res: Response) => {
    const newVideo = {
        id: +(new Date()),
        title: req.body.title,
@@ -84,42 +85,51 @@ app.post('/videos', (req: any, res: Response<VideoType>) => {
            "P144"
        ]}
 
-    if(req.body.title.length < 1){
-        res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
+    const { title, author, availableResolutions } = req.body;
+    const errs = videoValidator.check({ title, author, availableResolutions });
+    if (errs.length > 0) {
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).send({
+            errorsMessages: errs
+        });
         return;
     }
 
     videosDb.push(newVideo as any)
-    res.status(201).send(newVideo)
+    res.status(HTTP_STATUSES.CREATED_201).send(newVideo)
 })
 
 
 // GET
-app.get('/videos', (req: Request<{},{},{},{}>, res: any) => {
-    res.send(videosDb)
+app.get('/videos', (req: Request, res: Response) => {
+    res.status(HTTP_STATUSES.OK_200).send(videosDb)
 })
 
 app.get('/videos/:id', (req: Request<{id: string},{},{},{}>, res: any) => {
     let videos = videosDb.find((v: any)  => v.id === +req.params.id);
 
     if(videos){
-        res.send(videos)
+        res.status(HTTP_STATUSES.OK_200).send(videos)
     } else {
-        res.send(404)
+        res.send(HTTP_STATUSES.NOT_FOUND_404)
     }
 })
 
 
 // UPDATE
-app.put('/videos/:id', (req: any, res: any ) => {
-    let video= videosDb.find((v: any)  => v.id === +req.params.id);
-    console.log("req.body.title")
+app.put('/videos/:id', (req: Request, res: Response ) => {
+    const { title, author, availableResolutions, canBeDownloaded, minAgeRestriction, publicationDate } = req.body;
+    const errs = videoValidator.check({ title, author, availableResolutions, canBeDownloaded, minAgeRestriction, publicationDate });
+    if (errs.length > 0) {
+        res.status(HTTP_STATUSES.NOT_FOUND_404).send({
+            errorsMessages: errs
+        });
+        return;
+    }
 
+    let video= videosDb.find((v: any)  => v.id === +req.params.id);
     if(video){
         video.title = req.body.title
-        res.send(video)
-    } else{
-        res.send(404)
+        res.status(HTTP_STATUSES.OK_200).send(video)
     }
 })
 
@@ -132,12 +142,12 @@ app.delete('/videos/:id', (req: Request<{id: string},{},{},{}>, res: Response) =
         for(let i = 0; i < videosDb.length; i++){
             if(videosDb[i].id === +req.params.id){
                 videosDb.splice(i, 1);
-                res.send(204);
+                res.send(HTTP_STATUSES.NO_CONTENT_204);
                 return;
             }
         }
     } else {
-        res.send(404)
+        res.send(HTTP_STATUSES.NOT_FOUND_404)
     }
 })
 

@@ -42,7 +42,7 @@ describe('/course', () => {
     it("Should create video with correct input data", async() => {
        const createdResponse =  await request(app)
             .post('/videos')
-            .send({title: 'Video1'})
+            .send({title: 'Video1', author: 'author', availableResolutions: [  "P144"] })
             .expect(HTTP_STATUSES.CREATED_201)
 
       createdVideo = createdResponse.body;
@@ -53,6 +53,7 @@ describe('/course', () => {
            publicationDate:  "2023-07-24T11:49:49.897Z",
            minAgeRestriction: null,
            createdAt: expect.any(String),
+           author: expect.any(String),
            canBeDownloaded: true,
            availableResolutions: [ "P144",]
        })
@@ -79,14 +80,16 @@ describe('/course', () => {
     it("Should update course with correct input data", async() =>   {
         await request(app)
             .put('/videos/' + createdVideo.id)
-            .send({title: 'Video2'})
+            .send({title: 'Video2', author: 'author', availableResolutions: [  "P144"] })
             .expect(HTTP_STATUSES.OK_200)
 
         await request(app)
             .get('/videos/' + createdVideo.id)
             .expect(HTTP_STATUSES.OK_200, {
                 ...createdVideo,
-                title: 'Video2'
+                title: 'Video2',
+                author: 'author',
+                availableResolutions: [  "P144"]
             })
     })
 

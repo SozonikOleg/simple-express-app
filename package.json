@@ -10,7 +10,7 @@
     "dev": "yarn nodemon --inspect src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "jest": "jest"
+    "jest": "jest --runInBand"
   },
   "dependencies": {
     "@types/jest": "^29.5.3",
