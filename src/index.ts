@@ -74,7 +74,7 @@ app.use(parserMiddleware);
 // CREATE
 app.post('/videos', (req: Request, res: Response) => {
    const newVideo = {
-       id: +(new Date()),
+       id: req.body.id,
        title: req.body.title,
        author: req.body.author,
        canBeDownloaded: req.body.canBeDownloaded,
@@ -120,7 +120,14 @@ app.put('/videos/:id', (req: Request, res: Response ) => {
     const { title, author, availableResolutions, canBeDownloaded, minAgeRestriction, publicationDate } = req.body;
     const errs = videoValidator.check({ title, author, availableResolutions, canBeDownloaded, minAgeRestriction, publicationDate });
 
-    if (errs.length > 0 || !req.params.id) {
+    if (!req.params.id) {
+        res.status(HTTP_STATUSES.NOT_FOUND_404).send({
+            errorsMessages: errs
+        });
+        return;
+    }
+
+    if (errs.length > 0 ) {
         res.status(HTTP_STATUSES.BAD_REQUEST_400).send({
             errorsMessages: errs
         });
@@ -139,6 +146,12 @@ app.put('/videos/:id', (req: Request, res: Response ) => {
 // DELETE
 app.delete('/videos/:id', (req: Request<{id: string},{},{},{}>, res: Response) => {
     let videos = videosDb.find((v: any)  => v.id === +req.params.id);
+
+    if (!req.params.id) {
+        res.status(HTTP_STATUSES.NOT_FOUND_404)
+        return;
+    }
+
     if(videos){
         for(let i = 0; i < videosDb.length; i++){
             if(videosDb[i].id === +req.params.id){
