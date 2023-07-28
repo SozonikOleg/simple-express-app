@@ -98,7 +98,7 @@ app.post('/videos', (req: Request, res: Response) => {
         id: +(new Date()),
         title: req.body.title,
         author: req.body.author,
-        canBeDownloaded: true,
+        canBeDownloaded: false,
         minAgeRestriction: null,
         createdAt: new Date().toISOString(),
         publicationDate: datePlusOneDay.toISOString(),
@@ -142,6 +142,7 @@ debugger;
     if(!!video){
         video.title = req.body.title;
         video.author = req.body.author;
+        video.publicationDate = req.body.publicationDate ? req.body.publicationDate : video.publicationDate;
         video.canBeDownloaded = req.body.canBeDownloaded ? req.body.canBeDownloaded : video.canBeDownloaded;
         video.minAgeRestriction = req.body.minAgeRestriction ? req.body.minAgeRestriction : video.minAgeRestriction ;
         video.availableResolutions = req.body.availableResolutions ? req.body.availableResolutions : video.availableResolutions;
@@ -170,12 +171,12 @@ app.delete('/videos/:id', (req: Request<{id: string},{},{},{}>, res: Response) =
         for(let i = 0; i < videosDb.length; i++){
             if(videosDb[i].id === +req.params.id){
                 videosDb.splice(i, 1);
-                res.send(HTTP_STATUSES.NO_CONTENT_204);
+                res.status(HTTP_STATUSES.NO_CONTENT_204);
                 return;
             }
         }
     } else {
-        res.send(HTTP_STATUSES.NOT_FOUND_404)
+        res.status(HTTP_STATUSES.NOT_FOUND_404)
         return;
     }
 })
