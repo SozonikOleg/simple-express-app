@@ -71,34 +71,6 @@ const parserMiddleware = bodyParser();
 app.use(parserMiddleware);
 
 
-// CREATE
-app.post('/videos', (req: Request, res: Response) => {
-   const newVideo = {
-       id: req.body.id,
-       title: req.body.title,
-       author: req.body.author,
-       canBeDownloaded: req.body.canBeDownloaded,
-       minAgeRestriction: req.body.minAgeRestriction,
-       createdAt: new Date().toISOString(),
-       publicationDate: new Date().toISOString(),
-       availableResolutions: [
-           ...req.body.availableResolutions
-       ]}
-
-    const { title, author, availableResolutions } = req.body;
-    const errs = videoValidator.check({ title, author, availableResolutions });
-    if (errs.length > 0) {
-        res.status(HTTP_STATUSES.BAD_REQUEST_400).send({
-            errorsMessages: errs
-        });
-        return;
-    }
-
-    videosDb.push(newVideo as any)
-    res.status(HTTP_STATUSES.CREATED_201).send(newVideo)
-})
-
-
 // GET
 app.get('/videos', (req: Request, res: Response) => {
     res.status(HTTP_STATUSES.OK_200).send(videosDb)
@@ -112,6 +84,36 @@ app.get('/videos/:id', (req: Request<{id: string},{},{},{}>, res: any) => {
     } else {
         res.send(HTTP_STATUSES.NOT_FOUND_404)
     }
+})
+
+// CREATE
+app.post('/videos', (req: Request, res: Response) => {
+    const date = new Date();
+    const datePlusOneDay = date.setDate(date.getDate() + 1)
+
+    const newVideo = {
+        id: req.body.id,
+        title: req.body.title,
+        author: req.body.author,
+        canBeDownloaded: req.body.canBeDownloaded,
+        minAgeRestriction: req.body.minAgeRestriction,
+        createdAt: new Date().toISOString(),
+        publicationDate: datePlusOneDay,
+        availableResolutions: [
+            ...req.body.availableResolutions
+        ]}
+
+    const { title, author, availableResolutions } = req.body;
+    const errs = videoValidator.check({ title, author, availableResolutions });
+    if (errs.length > 0) {
+        res.status(HTTP_STATUSES.BAD_REQUEST_400).send({
+            errorsMessages: errs
+        });
+        return;
+    }
+
+    videosDb.push(newVideo as any)
+    res.status(HTTP_STATUSES.CREATED_201).send(newVideo)
 })
 
 
