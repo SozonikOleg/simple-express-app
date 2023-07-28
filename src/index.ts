@@ -137,7 +137,7 @@ app.put('/videos/:id', (req: Request, res: Response ) => {
         });
         return;
     }
-debugger;
+
     let video= videosDb.find((v: any)  => v.id === +req.params.id);
     if(!!video){
         video.title = req.body.title;
@@ -150,7 +150,7 @@ debugger;
         return;
     }
     if(!video){
-        res.send(HTTP_STATUSES.NOT_FOUND_404)
+        res.status(HTTP_STATUSES.NOT_FOUND_404).send(HTTP_STATUSES.NOT_FOUND_404)
         return;
     }
 })
@@ -163,7 +163,7 @@ app.delete('/videos/:id', (req: Request<{id: string},{},{},{}>, res: Response) =
 
     debugger;
     if (!req.params.id) {
-        res.status(HTTP_STATUSES.NOT_FOUND_404)
+        res.status(HTTP_STATUSES.NOT_FOUND_404).send(HTTP_STATUSES.NOT_FOUND_404)
         return;
     }
 
@@ -171,12 +171,12 @@ app.delete('/videos/:id', (req: Request<{id: string},{},{},{}>, res: Response) =
         for(let i = 0; i < videosDb.length; i++){
             if(videosDb[i].id === +req.params.id){
                 videosDb.splice(i, 1);
-                res.status(HTTP_STATUSES.NO_CONTENT_204);
+                res.status(HTTP_STATUSES.NO_CONTENT_204).send(HTTP_STATUSES.NO_CONTENT_204);
                 return;
             }
         }
     } else {
-        res.status(HTTP_STATUSES.NOT_FOUND_404)
+        res.status(HTTP_STATUSES.NOT_FOUND_404).send(HTTP_STATUSES.NOT_FOUND_404)
         return;
     }
 })
