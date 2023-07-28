@@ -98,8 +98,8 @@ app.post('/videos', (req: Request, res: Response) => {
         id: +(new Date()),
         title: req.body.title,
         author: req.body.author,
-        canBeDownloaded: req.body.canBeDownloaded,
-        minAgeRestriction: req.body.minAgeRestriction,
+        canBeDownloaded: true,
+        minAgeRestriction: null,
         createdAt: new Date().toISOString(),
         publicationDate: datePlusOneDay.toISOString(),
         availableResolutions: [
@@ -146,12 +146,10 @@ debugger;
         video.canBeDownloaded = req.body.canBeDownloaded ? req.body.canBeDownloaded : video.canBeDownloaded;
         video.minAgeRestriction = req.body.minAgeRestriction ? req.body.minAgeRestriction : video.minAgeRestriction ;
         video.availableResolutions = req.body.availableResolutions ? req.body.availableResolutions : video.availableResolutions;
-        debugger;
-        res.status(HTTP_STATUSES.OK_200).send(video)
+        res.send(HTTP_STATUSES.NO_CONTENT_204)
         return;
     }
     if(!video){
-        debugger;
         res.send(HTTP_STATUSES.NOT_FOUND_404)
         return;
     }
