@@ -92,7 +92,7 @@ app.get('/videos', (req: Request, res: Response) => {
 // CREATE
 app.post('/videos', (req: Request, res: Response) => {
     const date = new Date();
-    const datePlusOneDay = new Date(date.setDate(date.getDate() + 1))
+    const datePlusOneDay = new Date(date.setDate(date.getDate()))
 
     const newVideo = {
         id: +(new Date()),
