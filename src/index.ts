@@ -114,7 +114,6 @@ app.post('/videos', (req: Request, res: Response) => {
         });
         return;
     }
-
     videosDb.push(newVideo as any)
     res.status(HTTP_STATUSES.CREATED_201).send(newVideo)
     return;
