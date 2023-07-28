@@ -72,22 +72,22 @@ app.use(parserMiddleware);
 
 
 // GET
-app.get('/videos', (req: Request, res: Response) => {
-    res.status(HTTP_STATUSES.OK_200).send(videosDb)
-})
 
 app.get('/videos/:id', (req: Request<{id: string},{},{},{}>, res: any) => {
     let videos = videosDb.find((v: any)  => v.id === +req.params.id);
 
-    if (!req.params.id) {
-        res.status(HTTP_STATUSES.NOT_FOUND_404)
-        return;
-    }
-
     if(videos){
         res.status(HTTP_STATUSES.OK_200).send(videos)
+        return;
     }
 })
+
+app.get('/videos', (req: Request, res: Response) => {
+    res.status(HTTP_STATUSES.OK_200).send(videosDb)
+    return;
+})
+
+
 
 // CREATE
 app.post('/videos', (req: Request, res: Response) => {
@@ -117,6 +117,7 @@ app.post('/videos', (req: Request, res: Response) => {
 
     videosDb.push(newVideo as any)
     res.status(HTTP_STATUSES.CREATED_201).send(newVideo)
+    return;
 })
 
 
@@ -124,7 +125,6 @@ app.post('/videos', (req: Request, res: Response) => {
 app.put('/videos/:id', (req: Request, res: Response ) => {
     const { title, author, availableResolutions, canBeDownloaded, minAgeRestriction, publicationDate } = req.body;
     const errs = videoValidator.check({ title, author, availableResolutions, canBeDownloaded, minAgeRestriction, publicationDate });
-
     if (!req.params.id) {
         res.status(HTTP_STATUSES.NOT_FOUND_404).send({
             errorsMessages: errs
@@ -138,11 +138,22 @@ app.put('/videos/:id', (req: Request, res: Response ) => {
         });
         return;
     }
-
+debugger;
     let video= videosDb.find((v: any)  => v.id === +req.params.id);
     if(!!video){
-        video.title = req.body.title
-        res.status(HTTP_STATUSES.NO_CONTENT_204).send(video)
+        video.title = req.body.title;
+        video.author = req.body.author;
+        video.canBeDownloaded = req.body.canBeDownloaded ? req.body.canBeDownloaded : video.canBeDownloaded;
+        video.minAgeRestriction = req.body.minAgeRestriction ? req.body.minAgeRestriction : video.minAgeRestriction ;
+        video.availableResolutions = req.body.availableResolutions ? req.body.availableResolutions : video.availableResolutions;
+        debugger;
+        res.status(HTTP_STATUSES.OK_200).send(video)
+        return;
+    }
+    if(!video){
+        debugger;
+        res.send(HTTP_STATUSES.NOT_FOUND_404)
+        return;
     }
 })
 
@@ -152,6 +163,7 @@ app.put('/videos/:id', (req: Request, res: Response ) => {
 app.delete('/videos/:id', (req: Request<{id: string},{},{},{}>, res: Response) => {
     let videos = videosDb.find((v: any)  => v.id === +req.params.id);
 
+    debugger;
     if (!req.params.id) {
         res.status(HTTP_STATUSES.NOT_FOUND_404)
         return;
@@ -167,12 +179,14 @@ app.delete('/videos/:id', (req: Request<{id: string},{},{},{}>, res: Response) =
         }
     } else {
         res.send(HTTP_STATUSES.NOT_FOUND_404)
+        return;
     }
 })
 
 app.delete('/testing/all-data', (req, res) => {
     videosDb = [];
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+    return;
 })
 
 
