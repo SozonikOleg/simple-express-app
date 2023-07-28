@@ -1,4 +1,4 @@
-import express, {Request, Response} from 'express';
+import express, {Request, Response, NextFunction} from 'express';
 import videoValidator from "../validator/videoValidation";
 import bodyParser from 'body-parser';
 
@@ -64,11 +64,19 @@ let videosDb = [
     }
 ]
 
+const authGuardMiddleware = (req: any, res: any, next:NextFunction) => {
+    if(req.query.token === '123'){
+        next();
+    } else {
+        res.send(401);
+    }
+}
 
 
 // MIDDLEWARE
 const parserMiddleware = bodyParser();
 app.use(parserMiddleware);
+app.use(authGuardMiddleware);
 
 
 // GET
