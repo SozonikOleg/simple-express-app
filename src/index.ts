@@ -89,7 +89,7 @@ app.get('/videos/:id', (req: Request<{id: string},{},{},{}>, res: any) => {
 // CREATE
 app.post('/videos', (req: Request, res: Response) => {
     const date = new Date();
-    const datePlusOneDay = date.setDate(date.getDate() + 1)
+    const datePlusOneDay = new Date(date.setDate(date.getDate() + 1))
 
     const newVideo = {
         id: req.body.id,
@@ -98,7 +98,7 @@ app.post('/videos', (req: Request, res: Response) => {
         canBeDownloaded: req.body.canBeDownloaded,
         minAgeRestriction: req.body.minAgeRestriction,
         createdAt: new Date().toISOString(),
-        publicationDate: datePlusOneDay,
+        publicationDate: datePlusOneDay.toISOString(),
         availableResolutions: [
             ...req.body.availableResolutions
         ]}
