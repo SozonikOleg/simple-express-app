@@ -79,10 +79,13 @@ app.get('/videos', (req: Request, res: Response) => {
 app.get('/videos/:id', (req: Request<{id: string},{},{},{}>, res: any) => {
     let videos = videosDb.find((v: any)  => v.id === +req.params.id);
 
+    if (!req.params.id) {
+        res.status(HTTP_STATUSES.NOT_FOUND_404)
+        return;
+    }
+
     if(videos){
         res.status(HTTP_STATUSES.OK_200).send(videos)
-    } else {
-        res.send(HTTP_STATUSES.NOT_FOUND_404)
     }
 })
 
@@ -92,7 +95,7 @@ app.post('/videos', (req: Request, res: Response) => {
     const datePlusOneDay = new Date(date.setDate(date.getDate() + 1))
 
     const newVideo = {
-        id: req.body.id,
+        id: +(new Date()),
         title: req.body.title,
         author: req.body.author,
         canBeDownloaded: req.body.canBeDownloaded,
@@ -137,7 +140,7 @@ app.put('/videos/:id', (req: Request, res: Response ) => {
     }
 
     let video= videosDb.find((v: any)  => v.id === +req.params.id);
-    if(video){
+    if(!!video){
         video.title = req.body.title
         res.status(HTTP_STATUSES.NO_CONTENT_204).send(video)
     }
