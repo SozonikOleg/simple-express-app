@@ -76,6 +76,11 @@ app.use(parserMiddleware);
 app.get('/videos/:id', (req: Request<{id: string},{},{},{}>, res: any) => {
     let videos = videosDb.find((v: any)  => v.id === +req.params.id);
 
+    if (!videos) {
+        res.status(HTTP_STATUSES.NOT_FOUND_404).send(HTTP_STATUSES.NOT_FOUND_404)
+        return;
+    }
+
     if(videos){
         res.status(HTTP_STATUSES.OK_200).send(videos)
         return;
@@ -92,7 +97,7 @@ app.get('/videos', (req: Request, res: Response) => {
 // CREATE
 app.post('/videos', (req: Request, res: Response) => {
     const date = new Date();
-    const datePlusOneDay = new Date(date.setDate(date.getDate()))
+    const datePlusOneDay = new Date(date.setDate(date.getDate() + 1))
 
     const newVideo = {
         id: +(new Date()),
@@ -161,7 +166,6 @@ app.put('/videos/:id', (req: Request, res: Response ) => {
 app.delete('/videos/:id', (req: Request<{id: string},{},{},{}>, res: Response) => {
     let videos = videosDb.find((v: any)  => v.id === +req.params.id);
 
-    debugger;
     if (!req.params.id) {
         res.status(HTTP_STATUSES.NOT_FOUND_404).send(HTTP_STATUSES.NOT_FOUND_404)
         return;
